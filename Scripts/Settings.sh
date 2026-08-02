@@ -53,6 +53,12 @@ if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
 	echo "WRT_WIFI=wifi-no" >> $GITHUB_ENV
 fi
 
+#自定义files目录(uci-defaults等)
+if [ -d "$GITHUB_WORKSPACE/files" ]; then
+	cp -rf $GITHUB_WORKSPACE/files ./
+	echo "custom files copied!"
+fi
+
 #高通平台调整
 DTS_PATH="./target/linux/qualcommax/dts/"
 if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
