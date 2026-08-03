@@ -1,0 +1,102 @@
+log:
+  level: info
+  file: "/var/log/mosdns.log"
+
+api:
+  http: "0.0.0.0:9091"
+
+include: []
+
+plugins:
+  - tag: geosite_cn
+    type: domain_set
+    args:
+      files:
+        - "/var/mosdns/geosite_cn.txt"
+
+  - tag: geoip_cn
+    type: ip_set
+    args:
+      files:
+        - "/var/mosdns/geoip_cn.txt"
+
+  - tag: geosite_no_cn
+    type: domain_set
+    args:
+      files:
+        - "/var/mosdns/geosite_geolocation-!cn.txt"
+
+  - tag: lazy_cache
+    type: cache
+    args:
+      size: 20000
+      lazy_cache_ttl: 86400
+      dump_file: "/etc/mosdns/cache.dump"
+      dump_interval: 600
+
+  - tag: forward_local
+    type: forward
+    args:
+      upstreams:
+        - addr: "https://doh.pub/dns-query"
+          bootstrap: 180.76.76.76
+        - addr: 119.29.29.29
+
+  - tag: forward_remote
+    type: forward
+    args:
+      upstreams:
+        - addr: tls://8.8.8.8
+          enable_pipeline: false
+
+  - tag: local_sequence
+    type: sequence
+    args:
+      - exec: $forward_local
+
+  - tag: remote_sequence
+    type: sequence
+    args:
+      - exec: prefer_ipv4
+      - exec: $forward_remote
+
+  - tag: has_resp_sequence
+    type: sequence
+    args:
+      - matches: has_resp
+        exec: accept
+
+  - tag: query_is_local_domain
+    type: sequence
+    args:
+      - matches: qname $geosite_cn
+        exec: $local_sequence
+
+  - tag: query_is_no_local_domain
+    type: sequence
+    args:
+      - matches: qname $geosite_no_cn
+        exec: $remote_sequence
+
+  - tag: main_sequence
+    type: sequence
+    args:
+      - exec: $lazy_cache
+      - exec: jump has_resp_sequence
+      - exec: $query_is_local_domain
+      - exec: jump has_resp_sequence
+      - exec: $query_is_no_local_domain
+      - exec: jump has_resp_sequence
+      - exec: $remote_sequence
+
+  - tag: udp_server
+    type: udp_server
+    args:
+      entry: main_sequence
+      listen: ":5335"
+
+  - tag: tcp_server
+    type: tcp_server
+    args:
+      entry: main_sequence
+      listen: ":5335"

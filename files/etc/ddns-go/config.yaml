@@ -1,0 +1,35 @@
+dnsconf:
+    - name: ""
+      ipv4:
+        enable: true
+        gettype: url
+        url: https://myip.ipip.net, https://ddns.oray.com/checkip, https://ip.3322.net, https://4.ipw.cn, https://v4.yinghualuo.cn/bejson
+        netinterface: br-lan
+        cmd: ""
+        domains:
+            - hb.dannishoo.club
+      ipv6:
+        enable: true
+        gettype: netInterface
+        url: https://speed.neu6.edu.cn/getIP.php, https://v6.ident.me, https://6.ipw.cn, https://v6.yinghualuo.cn/bejson
+        netinterface: ""
+        cmd: ""
+        ipv6reg: ""
+        domains:
+            - ""
+      dns:
+        name: dnspod
+        id: "REDACTED_DNSID"
+        secret: REDACTED_DNSTOKEN
+        extparam: ""
+      ttl: ""
+      httpinterface: ""
+user:
+    username: admin
+    password: $2a$10$TMil0hecvr1/Ordsy2sEL.cDU6AnsgZjyHzpZvRvlPpZWt9t/tJbO
+webhook:
+    webhookurl: ""
+    webhookrequestbody: ""
+    webhookheaders: ""
+notallowwanaccess: true
+lang: zh
