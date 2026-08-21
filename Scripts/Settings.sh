@@ -68,3 +68,9 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 		echo "qualcommax set up nowifi successfully!"
 	fi
 fi
+
+#强制重编内核(清除编译标记)
+rm -rf staging_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq807x/tmp
+find staging_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq807x/ -name '.configured' -o -name '.compiled' -o -name '.quilt' | xargs rm -f 2>/dev/null
+echo 'kernel rebuild forced!'
+
