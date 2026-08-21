@@ -69,8 +69,7 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 	fi
 fi
 
-#强制重编内核(清除编译标记)
-rm -rf staging_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq807x/tmp
-find staging_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq807x/ -name '.configured' -o -name '.compiled' -o -name '.quilt' | xargs rm -f 2>/dev/null
-echo 'kernel rebuild forced!'
+#强制重编内核(只删编译标记，保留tmp)
+find build_dir/target-aarch64_cortex-a53_musl/linux-qualcommax_ipq807x/ -maxdepth 1 -name '.configured' -o -name '.compiled' -o -name '.quilt' -o -name '.target-installed' | xargs rm -f 2>/dev/null
+echo 'kernel rebuild forced (stamps only)!
 
